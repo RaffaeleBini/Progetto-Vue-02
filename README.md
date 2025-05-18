@@ -18,7 +18,7 @@ ReFresh Food is a minimalist web application built with Vue.js and Vite, designe
 
 ## How it works
 
-1. Open the APP: `https://RaffaeleBini.github.io/refresh-food/`
+1. Open the APP: `https://raffaelebini.github.io/Progetto-Vue-02/`
 2. Navigate through the product list and select a product to view the details
 3. Add product(s) to the cart
 4. Go to the cart and check the total
@@ -32,7 +32,7 @@ ReFresh Food is a minimalist web application built with Vue.js and Vite, designe
 * GitHub Pages
 
 ## App Link
-[Click here to launch the App](https://raffaelebini.github.io/Progetto-Vue-01/)
+[Click here to launch the App](https://raffaelebini.github.io/Progetto-Vue-02/)
 
 ## Screenshots
 ![App Screenshot](./src/assets/ScreenshotTicTacToe.png)

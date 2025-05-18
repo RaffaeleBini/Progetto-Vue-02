@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import AppHeader from './components/AppHeader.vue';
 import ProductList from './components/ProductList.vue';
 import ProductDetail from './components/ProductDetail.vue';
