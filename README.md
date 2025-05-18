@@ -35,7 +35,7 @@ ReFresh Food is a minimalist web application built with Vue.js and Vite, designe
 [Click here to launch the App](https://raffaelebini.github.io/Progetto-Vue-02/)
 
 ## Screenshots
-![App Screenshot](./src/assets/ScreenshotTicTacToe.png)
+![App Screenshot](./src/assets/ScreenshotRefreshFood.png)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
