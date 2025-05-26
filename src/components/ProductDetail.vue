@@ -58,10 +58,10 @@
     product: Product;
   }>();
   
-  // Emits
+  // Emits - AGGIORNATO per includere la quantità
   const emit = defineEmits<{
     (e: 'back'): void;
-    (e: 'add-to-cart', product: Product): void;
+    (e: 'add-to-cart', product: Product, quantity: number): void;
   }>();
   
   // Stato
@@ -76,10 +76,8 @@
   };
   
   const addToCart = () => {
-    // Aggiungi il prodotto al carrello tante volte quante indicate dalla quantità
-    for (let i = 0; i < quantity.value; i++) {
-      emit('add-to-cart', props.product);
-    }
+    // CORRETTO: Emette una sola volta con la quantità specifica
+    emit('add-to-cart', props.product, quantity.value);
     // Reset della quantità dopo l'aggiunta
     quantity.value = 1;
   };

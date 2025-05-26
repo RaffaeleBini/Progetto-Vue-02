@@ -1,7 +1,12 @@
 <template>
   <div class="app-container">
+    <!-- Notifica -->
+    <div v-if="cartStore.notification" class="notification">
+      {{ cartStore.notification }}
+    </div>
+
     <AppHeader 
-      :cartItemsCount="cartItems.length" 
+      :cartItemsCount="cartStore.cartItemsCount" 
       @toggle-cart="showCart = !showCart"
       @show-products="showCart = false" 
     />
@@ -10,9 +15,9 @@
       <!-- Mostra il carrello quando showCart è true -->
       <ShoppingCart 
         v-if="showCart" 
-        :items="cartItems" 
-        @remove-item="removeFromCart" 
-        @update-quantity="updateCartItemQuantity"
+        :items="cartStore.items" 
+        @remove-item="cartStore.removeFromCart" 
+        @update-quantity="cartStore.updateQuantity"
       />
       
       <!-- Altrimenti mostra o la lista prodotti o il dettaglio prodotto -->
@@ -20,14 +25,14 @@
         <ProductDetail 
           v-if="selectedProduct" 
           :product="selectedProduct" 
-          @add-to-cart="addToCart" 
+          @add-to-cart="cartStore.addToCart" 
           @back="selectedProduct = null" 
         />
         <ProductList 
           v-else 
           :products="products" 
           @select-product="selectProduct" 
-          @add-to-cart="addToCart" 
+          @add-to-cart="cartStore.addToCart" 
         />
       </template>
     </main>
@@ -37,100 +42,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import AppHeader from './components/AppHeader.vue';
-import ProductList from './components/ProductList.vue';
-import ProductDetail from './components/ProductDetail.vue';
-import ShoppingCart from './components/ShoppingCart.vue';
-import AppFooter from './components/AppFooter.vue';
+import { ref, onMounted } from 'vue'
+import { useCartStore } from './stores/cartStore'
+import AppHeader from './components/AppHeader.vue'
+import ProductList from './components/ProductList.vue'
+import ProductDetail from './components/ProductDetail.vue'
+import ShoppingCart from './components/ShoppingCart.vue'
+import AppFooter from './components/AppFooter.vue'
+import type { Product } from './types/Product'
 
-// Definizione dei tipi
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  image: string;
-  category: string;
-}
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
+// Store
+const cartStore = useCartStore()
 
 // Stato dell'applicazione
-const products = ref<Product[]>([]);
-const selectedProduct = ref<Product | null>(null);
-const cartItems = ref<CartItem[]>([]);
-const showCart = ref(false);
+const products = ref<Product[]>([])
+const selectedProduct = ref<Product | null>(null)
+const showCart = ref(false)
 
 // Carica i dati dei prodotti dall'API
 onMounted(async () => {
   try {
-    const response = await fetch('https://ott-fogliata.github.io/vuejs-s2i-repository/cultured-meat.json');
-    const data = await response.json();
-    products.value = data;
+    const response = await fetch('https://ott-fogliata.github.io/vuejs-s2i-repository/cultured-meat.json')
+    const data = await response.json()
+    products.value = data
   } catch (error) {
-    console.error('Errore nel caricamento dei prodotti:', error);
+    console.error('Errore nel caricamento dei prodotti:', error)
   }
-});
+})
 
 // Seleziona un prodotto per visualizzarne i dettagli
 const selectProduct = (product: Product) => {
-  selectedProduct.value = product;
-  window.scrollTo(0, 0);
-};
-
-// Aggiungi un prodotto al carrello
-const addToCart = (product: Product) => {
-  const existingItem = cartItems.value.find(item => item.product.id === product.id);
-  
-  if (existingItem) {
-    existingItem.quantity += 1;
-  } else {
-    cartItems.value.push({ product, quantity: 1 });
-  }
-  
-  // Salva il carrello nel localStorage
-  localStorage.setItem('refreshFoodCart', JSON.stringify(cartItems.value));
-};
-
-// Rimuovi un prodotto dal carrello
-const removeFromCart = (productId: number) => {
-  cartItems.value = cartItems.value.filter(item => item.product.id !== productId);
-  localStorage.setItem('refreshFoodCart', JSON.stringify(cartItems.value));
-};
-
-// Aggiorna la quantità di un prodotto nel carrello
-const updateCartItemQuantity = (productId: number, quantity: number) => {
-  const item = cartItems.value.find(item => item.product.id === productId);
-  if (item) {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-    } else {
-      item.quantity = quantity;
-      localStorage.setItem('refreshFoodCart', JSON.stringify(cartItems.value));
-    }
-  }
-};
-
-// Carica il carrello dal localStorage all'avvio dell'app
-onMounted(() => {
-  const savedCart = localStorage.getItem('refreshFoodCart');
-  if (savedCart) {
-    try {
-      cartItems.value = JSON.parse(savedCart);
-    } catch (e) {
-      console.error('Errore nel parsing del carrello salvato:', e);
-    }
-  }
-});
-
-// Mostra notifica quando un prodotto viene aggiunto al carrello
-watch(cartItems, () => {
-  // Qui si potrebbe implementare una notifica
-}, { deep: true });
+  selectedProduct.value = product
+  window.scrollTo(0, 0)
+}
 </script>
 
 <style>
@@ -161,6 +105,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
 }
 
 main {
@@ -171,6 +116,31 @@ main {
   width: 100%;
 }
 
+/* Stili per la notifica */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 button {
   cursor: pointer;
   background-color: var(--primary-color);
@@ -179,11 +149,16 @@ button {
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 button:hover {
   background-color: #3d8b40;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {

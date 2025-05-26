@@ -38,15 +38,7 @@
   </template>
   
   <script setup lang="ts">
-  // Definizione dell'interfaccia Product
-  interface Product {
-    id: number;
-    name: string;
-    price: number;
-    description: string;
-    image: string;
-    category: string;
-  }
+  import type { Product } from '../types/Product';
   
   // Props 
   defineProps<{

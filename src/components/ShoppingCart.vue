@@ -2,6 +2,12 @@
     <div class="shopping-cart">
       <h2>Il tuo carrello</h2>
       
+      <!-- Debug: mostra struttura del carrello -->
+      <div v-if="debugMode" class="debug-info">
+        <h4>Debug - Contenuto carrello:</h4>
+        <pre>{{ JSON.stringify(items, null, 2) }}</pre>
+      </div>
+      
       <div v-if="items.length === 0" class="empty-cart">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="empty-cart-icon">
           <circle cx="9" cy="21" r="1"></circle>
@@ -22,6 +28,8 @@
             <div class="item-details">
               <h3>{{ item.product.name }}</h3>
               <p class="item-price">€{{ item.product.price.toFixed(2) }}</p>
+              <!-- Debug: mostra ID del prodotto -->
+              <small v-if="debugMode" class="debug-id">ID: {{ item.product.id }}</small>
             </div>
             
             <div class="item-quantity">
@@ -67,13 +75,18 @@
           <span>{{ discountMessage }}</span>
         </div>
         
+        <!-- Pulsante per toggle debug -->
+        <button @click="debugMode = !debugMode" class="debug-toggle">
+          {{ debugMode ? 'Nascondi Debug' : 'Mostra Debug' }}
+        </button>
+        
         <button class="checkout-btn">Procedi al checkout</button>
       </div>
     </div>
   </template>
   
   <script setup lang="ts">
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
   
   // Definizione delle interfacce
   interface Product {
@@ -89,6 +102,9 @@
     product: Product;
     quantity: number;
   }
+  
+  // Debug mode
+  const debugMode = ref(false);
   
   // Props
   const props = defineProps<{
@@ -148,6 +164,27 @@
     text-align: center;
     color: var(--primary-color);
     margin-bottom: 2rem;
+  }
+  
+  .debug-info {
+    background: #f0f0f0;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .debug-id {
+    color: #666;
+    font-size: 0.7rem;
+  }
+  
+  .debug-toggle {
+    background: #666;
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
   }
   
   .empty-cart {
